@@ -3,14 +3,25 @@ const path = require('path');
 const { Client } = require('pg');
 require('dotenv').config();
 
-const getPgConfig = (databaseOverride) => ({
-  host: process.env.PGHOST || 'localhost',
-  port: Number(process.env.PGPORT) || 5432,
-  user: process.env.PGUSER || 'postgres',
-  password: process.env.PGPASSWORD || '',
-  database: databaseOverride || process.env.PGDATABASE || 'farmacia_db',
-  ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
-});
+const connectionString =
+  process.env.DATABASE_URL ||
+  process.env.POSTGRES_URL ||
+  process.env.POSTGRES_PUBLIC_URL ||
+  process.env.DB_URL;
+
+const sslConfig = process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false;
+
+const getPgConfig = (databaseOverride) =>
+  connectionString
+    ? { connectionString, ssl: sslConfig }
+    : {
+        host: process.env.PGHOST || 'localhost',
+        port: Number(process.env.PGPORT) || 5432,
+        user: process.env.PGUSER || 'postgres',
+        password: process.env.PGPASSWORD || '',
+        database: databaseOverride || process.env.PGDATABASE || 'farmacia_db',
+        ssl: sslConfig,
+      };
 
 const splitSqlStatements = (sql) => {
   const sanitizedSql = sql
@@ -54,6 +65,10 @@ const splitSqlStatements = (sql) => {
 };
 
 const ensureDatabaseExists = async (database) => {
+  // With a connection string (e.g. Railway's managed Postgres), the target
+  // database is already provisioned — there's nothing to create.
+  if (connectionString) return;
+
   const adminClient = new Client(getPgConfig('postgres'));
   await adminClient.connect();
 
