@@ -90,8 +90,8 @@ El servidor queda disponible en `http://localhost:5000`. Verifica con `GET /heal
 - `GET /health`: health check.
 - `POST /api/auth/...`: autenticación.
 - `GET/POST/PUT/DELETE /api/usuarios`: gestión de usuarios.
-- `GET/POST/PUT/DELETE /api/productos`: gestión de productos.
-- `GET/POST/PUT/DELETE /api/categorias`: gestión de categorías.
+- `GET/POST/PUT/DELETE /api/productos`: gestión de productos. Los `GET` (listar/ver) son públicos, sin necesidad de login, para permitir el catálogo público de la tienda; crear/editar/eliminar siguen requiriendo admin.
+- `GET/POST/PUT/DELETE /api/categorias`: gestión de categorías. Los `GET` también son públicos por el mismo motivo.
 - `GET/POST/PUT/DELETE /api/ventas`: gestión de ventas. `POST /api/ventas` acepta un campo opcional `domicilio` (`{ direccion, direccion2, barrio, ciudad, telefono, notas }`) para registrar una entrega a domicilio junto con la venta.
 - `GET /api/ventas/mis-compras`: historial de compras del usuario autenticado (con o sin domicilio).
 - `GET /api/domicilios`: lista todos los domicilios (admin).
