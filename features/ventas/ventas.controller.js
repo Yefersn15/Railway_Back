@@ -47,15 +47,21 @@ const getVentaById = async (req, res) => {
         }
 
         const detalleResult = await pool.query(
-            `SELECT dv.*, p.nombre as producto_nombre 
-             FROM detalle_ventas dv 
-             LEFT JOIN productos p ON dv.producto_id = p.id 
+            `SELECT dv.*, p.nombre as producto_nombre
+             FROM detalle_ventas dv
+             LEFT JOIN productos p ON dv.producto_id = p.id
              WHERE dv.venta_id = $1`,
+            [id]
+        );
+
+        const domicilioResult = await pool.query(
+            'SELECT * FROM domicilios WHERE venta_id = $1',
             [id]
         );
 
         const venta = ventaResult.rows[0];
         venta.detalles = detalleResult.rows;
+        venta.domicilio = domicilioResult.rows[0] || null;
 
         res.json(venta);
     } catch (error) {
@@ -69,7 +75,7 @@ const createVenta = async (req, res) => {
     try {
         await client.query('BEGIN');
 
-        const { detalles, metodo_pago } = req.body;
+        const { detalles, metodo_pago, domicilio } = req.body;
         const usuario_id = req.usuario.id;
 
         if (!detalles || detalles.length === 0) {
@@ -123,6 +129,22 @@ const createVenta = async (req, res) => {
                  SET stock = stock - $1, updated_at = CURRENT_TIMESTAMP
                  WHERE id = $2`,
                 [item.cantidad, item.producto_id]
+            );
+        }
+
+        if (domicilio && domicilio.direccion) {
+            await client.query(
+                `INSERT INTO domicilios (venta_id, direccion, direccion2, barrio, ciudad, telefono, notas)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+                [
+                    ventaId,
+                    domicilio.direccion,
+                    domicilio.direccion2 || null,
+                    domicilio.barrio || null,
+                    domicilio.ciudad || null,
+                    domicilio.telefono || null,
+                    domicilio.notas || null,
+                ]
             );
         }
 

@@ -1,6 +1,6 @@
 # Farmacia App — Backend
 
-API REST en Node.js/Express con PostgreSQL para la aplicación de farmacia (autenticación, usuarios, productos, categorías y ventas).
+API REST en Node.js/Express con PostgreSQL para la aplicación de farmacia (autenticación, usuarios, productos, categorías, ventas y domicilios).
 
 ## Estructura
 
@@ -92,7 +92,15 @@ El servidor queda disponible en `http://localhost:5000`. Verifica con `GET /heal
 - `GET/POST/PUT/DELETE /api/usuarios`: gestión de usuarios.
 - `GET/POST/PUT/DELETE /api/productos`: gestión de productos.
 - `GET/POST/PUT/DELETE /api/categorias`: gestión de categorías.
-- `GET/POST/PUT/DELETE /api/ventas`: gestión de ventas.
+- `GET/POST/PUT/DELETE /api/ventas`: gestión de ventas. `POST /api/ventas` acepta un campo opcional `domicilio` (`{ direccion, direccion2, barrio, ciudad, telefono, notas }`) para registrar una entrega a domicilio junto con la venta.
+- `GET /api/domicilios`: lista todos los domicilios (admin).
+- `GET /api/domicilios/mis-domicilios`: domicilios del usuario autenticado.
+- `PATCH /api/domicilios/:id/estado`: cambia el estado de un domicilio (admin). Estados válidos: `pendiente`, `en_camino`, `entregado`, `cancelado`.
+
+## Roles y permisos
+
+- **admin**: acceso completo (productos, categorías, usuarios, ver todas las ventas y domicilios, cambiar estado de domicilios).
+- **usuario**: puede ver productos/categorías, crear ventas (incluyendo con domicilio) y ver únicamente sus propios domicilios.
 
 ## Despliegue
 

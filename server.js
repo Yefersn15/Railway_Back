@@ -139,6 +139,11 @@ app.use(
   require('./features/ventas/ventas.routes')
 );
 
+app.use(
+  '/api/domicilios',
+  require('./features/domicilios/domicilios.routes')
+);
+
 // ============================================
 // RUTA NO ENCONTRADA
 // ============================================

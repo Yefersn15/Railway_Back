@@ -81,6 +81,26 @@ CREATE TABLE IF NOT EXISTS detalle_ventas (
         FOREIGN KEY (producto_id) REFERENCES productos(id) ON DELETE CASCADE
 );
 
+-- Tabla de domicilios (entregas a domicilio de una venta)
+CREATE TABLE IF NOT EXISTS domicilios (
+    id SERIAL PRIMARY KEY,
+    venta_id INTEGER NOT NULL UNIQUE,
+    direccion VARCHAR(255) NOT NULL,
+    direccion2 VARCHAR(255),
+    barrio VARCHAR(100),
+    ciudad VARCHAR(100),
+    telefono VARCHAR(20),
+    costo_envio NUMERIC(10, 2) DEFAULT 0,
+    estado VARCHAR(20) DEFAULT 'pendiente',
+    notas TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_domicilios_venta
+        FOREIGN KEY (venta_id) REFERENCES ventas(id) ON DELETE CASCADE,
+    CONSTRAINT chk_domicilios_estado
+        CHECK (estado IN ('pendiente', 'en_camino', 'entregado', 'cancelado'))
+);
+
 -- Triggers para updated_at
 DROP TRIGGER IF EXISTS trg_usuarios_updated_at ON usuarios;
 CREATE TRIGGER trg_usuarios_updated_at
@@ -97,6 +117,12 @@ EXECUTE FUNCTION set_updated_at();
 DROP TRIGGER IF EXISTS trg_productos_updated_at ON productos;
 CREATE TRIGGER trg_productos_updated_at
 BEFORE UPDATE ON productos
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();
+
+DROP TRIGGER IF EXISTS trg_domicilios_updated_at ON domicilios;
+CREATE TRIGGER trg_domicilios_updated_at
+BEFORE UPDATE ON domicilios
 FOR EACH ROW
 EXECUTE FUNCTION set_updated_at();
 
