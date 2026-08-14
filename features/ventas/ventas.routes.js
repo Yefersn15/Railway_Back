@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {
     getVentas,
+    getMisCompras,
     getVentaById,
     createVenta,
     getEstadisticas
@@ -10,6 +11,7 @@ const { verificarToken, verificarAdmin } = require('../auth/auth.middleware');
 
 router.get('/', verificarToken, verificarAdmin, getVentas);
 router.get('/estadisticas', verificarToken, getEstadisticas);
+router.get('/mis-compras', verificarToken, getMisCompras);
 router.get('/:id', verificarToken, verificarAdmin, getVentaById);
 router.post('/', verificarToken, createVenta);
 

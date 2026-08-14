@@ -23,4 +23,11 @@ const verificarAdmin = (req, res, next) => {
     next();
 };
 
-module.exports = { verificarToken, verificarAdmin };
+const verificarRoles = (...roles) => (req, res, next) => {
+    if (!roles.includes(req.usuario.rol)) {
+        return res.status(403).json({ error: 'Acceso denegado' });
+    }
+    next();
+};
+
+module.exports = { verificarToken, verificarAdmin, verificarRoles };

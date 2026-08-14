@@ -30,6 +30,24 @@ const getVentas = async (req, res) => {
     }
 };
 
+const getMisCompras = async (req, res) => {
+    try {
+        const usuario_id = req.usuario.id;
+
+        const result = await pool.query(
+            `SELECT v.*, d.estado as domicilio_estado, d.direccion as domicilio_direccion
+             FROM ventas v
+             LEFT JOIN domicilios d ON d.venta_id = v.id
+             WHERE v.usuario_id = $1
+             ORDER BY v.fecha DESC`,
+            [usuario_id]
+        );
+        res.json(result.rows);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 const getVentaById = async (req, res) => {
     try {
         const { id } = req.params;
@@ -208,6 +226,7 @@ const getEstadisticas = async (req, res) => {
 
 module.exports = {
     getVentas,
+    getMisCompras,
     getVentaById,
     createVenta,
     getEstadisticas

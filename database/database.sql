@@ -5,9 +5,12 @@
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'rol_usuario') THEN
-        CREATE TYPE rol_usuario AS ENUM ('admin', 'usuario');
+        CREATE TYPE rol_usuario AS ENUM ('admin', 'usuario', 'domiciliario');
     END IF;
 END $$;
+
+-- Agrega el rol domiciliario si el tipo ya existía sin él (despliegues previos)
+ALTER TYPE rol_usuario ADD VALUE IF NOT EXISTS 'domiciliario';
 
 -- Función para actualizar updated_at automáticamente
 CREATE OR REPLACE FUNCTION set_updated_at()
@@ -93,13 +96,19 @@ CREATE TABLE IF NOT EXISTS domicilios (
     costo_envio NUMERIC(10, 2) DEFAULT 0,
     estado VARCHAR(20) DEFAULT 'pendiente',
     notas TEXT,
+    repartidor_id INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_domicilios_venta
         FOREIGN KEY (venta_id) REFERENCES ventas(id) ON DELETE CASCADE,
+    CONSTRAINT fk_domicilios_repartidor
+        FOREIGN KEY (repartidor_id) REFERENCES usuarios(id) ON DELETE SET NULL,
     CONSTRAINT chk_domicilios_estado
         CHECK (estado IN ('pendiente', 'en_camino', 'entregado', 'cancelado'))
 );
+
+-- Agrega la columna repartidor_id si la tabla ya existía sin ella (despliegues previos)
+ALTER TABLE domicilios ADD COLUMN IF NOT EXISTS repartidor_id INTEGER REFERENCES usuarios(id) ON DELETE SET NULL;
 
 -- Triggers para updated_at
 DROP TRIGGER IF EXISTS trg_usuarios_updated_at ON usuarios;

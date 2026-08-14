@@ -93,14 +93,18 @@ El servidor queda disponible en `http://localhost:5000`. Verifica con `GET /heal
 - `GET/POST/PUT/DELETE /api/productos`: gestión de productos.
 - `GET/POST/PUT/DELETE /api/categorias`: gestión de categorías.
 - `GET/POST/PUT/DELETE /api/ventas`: gestión de ventas. `POST /api/ventas` acepta un campo opcional `domicilio` (`{ direccion, direccion2, barrio, ciudad, telefono, notas }`) para registrar una entrega a domicilio junto con la venta.
+- `GET /api/ventas/mis-compras`: historial de compras del usuario autenticado (con o sin domicilio).
 - `GET /api/domicilios`: lista todos los domicilios (admin).
-- `GET /api/domicilios/mis-domicilios`: domicilios del usuario autenticado.
-- `PATCH /api/domicilios/:id/estado`: cambia el estado de un domicilio (admin). Estados válidos: `pendiente`, `en_camino`, `entregado`, `cancelado`.
+- `GET /api/domicilios/mis-domicilios`: domicilios del usuario autenticado (como comprador).
+- `GET /api/domicilios/mis-entregas`: domicilios asignados al domiciliario autenticado.
+- `PATCH /api/domicilios/:id/asignar`: asigna un usuario con rol `domiciliario` a un domicilio (admin). Body: `{ repartidor_id }` (o `null` para desasignar).
+- `PATCH /api/domicilios/:id/estado`: cambia el estado de un domicilio (admin, o el domiciliario asignado únicamente sobre sus propios domicilios). Estados válidos: `pendiente`, `en_camino`, `entregado`, `cancelado`.
 
 ## Roles y permisos
 
-- **admin**: acceso completo (productos, categorías, usuarios, ver todas las ventas y domicilios, cambiar estado de domicilios).
-- **usuario**: puede ver productos/categorías, crear ventas (incluyendo con domicilio) y ver únicamente sus propios domicilios.
+- **admin**: acceso completo (productos, categorías, usuarios, ver todas las ventas y domicilios, asignar domiciliarios, cambiar estado de domicilios).
+- **usuario**: puede ver productos/categorías, crear ventas (incluyendo con domicilio), ver su propio historial de compras (`mis-compras`) y sus propios domicilios (`mis-domicilios`).
+- **domiciliario**: puede ver los domicilios que le fueron asignados (`mis-entregas`) y cambiar el estado únicamente de esos.
 
 ## Despliegue
 
