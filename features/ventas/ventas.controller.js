@@ -64,8 +64,12 @@ const getVentaById = async (req, res) => {
             return res.status(404).json({ error: 'Venta no encontrada' });
         }
 
+        if (req.usuario.rol !== 'admin' && ventaResult.rows[0].usuario_id !== req.usuario.id) {
+            return res.status(403).json({ error: 'No tienes permiso para ver esta venta' });
+        }
+
         const detalleResult = await pool.query(
-            `SELECT dv.*, p.nombre as producto_nombre
+            `SELECT dv.*, p.nombre as producto_nombre, p.imagen_url as producto_imagen
              FROM detalle_ventas dv
              LEFT JOIN productos p ON dv.producto_id = p.id
              WHERE dv.venta_id = $1`,
