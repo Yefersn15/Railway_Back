@@ -10,8 +10,8 @@ const {
 } = require('./productos.controller');
 const { verificarToken, verificarAdmin } = require('../auth/auth.middleware');
 
-router.get('/', verificarToken, getProductos);
-router.get('/:id', verificarToken, getProductoById);
+router.get('/', getProductos);
+router.get('/:id', getProductoById);
 router.post('/', verificarToken, verificarAdmin, createProducto);
 router.put('/:id', verificarToken, verificarAdmin, updateProducto);
 router.delete('/:id', verificarToken, verificarAdmin, deleteProducto);
