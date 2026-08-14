@@ -51,11 +51,15 @@ CREATE TABLE IF NOT EXISTS productos (
     categoria_id INTEGER,
     codigo_barras VARCHAR(50) UNIQUE,
     fecha_vencimiento DATE,
+    imagen_url VARCHAR(500),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_productos_categoria
         FOREIGN KEY (categoria_id) REFERENCES categorias(id) ON DELETE SET NULL
 );
+
+-- Agrega la columna imagen_url si la tabla ya existía sin ella (despliegues previos)
+ALTER TABLE productos ADD COLUMN IF NOT EXISTS imagen_url VARCHAR(500);
 
 -- Tabla de ventas
 CREATE TABLE IF NOT EXISTS ventas (

@@ -61,14 +61,15 @@ const createProducto = async (req, res) => {
             stock,
             categoria_id,
             codigo_barras,
-            fecha_vencimiento 
+            fecha_vencimiento,
+            imagen_url
         } = req.body;
 
         const result = await pool.query(
-            `INSERT INTO productos (nombre, descripcion, precio, stock, categoria_id, codigo_barras, fecha_vencimiento)
-             VALUES ($1, $2, $3, $4, $5, $6, $7)
+            `INSERT INTO productos (nombre, descripcion, precio, stock, categoria_id, codigo_barras, fecha_vencimiento, imagen_url)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
              RETURNING *`,
-            [nombre, descripcion, precio, stock, categoria_id, codigo_barras, fecha_vencimiento]
+            [nombre, descripcion, precio, stock, categoria_id, codigo_barras, fecha_vencimiento, imagen_url || null]
         );
 
         res.status(201).json(result.rows[0]);
@@ -90,7 +91,8 @@ const updateProducto = async (req, res) => {
             stock,
             categoria_id,
             codigo_barras,
-            fecha_vencimiento 
+            fecha_vencimiento,
+            imagen_url
         } = req.body;
 
         const result = await pool.query(
@@ -102,10 +104,11 @@ const updateProducto = async (req, res) => {
                  categoria_id = $5,
                  codigo_barras = $6,
                  fecha_vencimiento = $7,
+                 imagen_url = $8,
                  updated_at = CURRENT_TIMESTAMP
-             WHERE id = $8
+             WHERE id = $9
              RETURNING *`,
-            [nombre, descripcion, precio, stock, categoria_id, codigo_barras, fecha_vencimiento, id]
+            [nombre, descripcion, precio, stock, categoria_id, codigo_barras, fecha_vencimiento, imagen_url || null, id]
         );
 
         if (result.rows.length === 0) {
